@@ -40,6 +40,7 @@ export class Resx {
 						if (!translation) {
 							object.isChange = true;
 							result.requests.push({
+								srcLang: 'en',
 								lang: langKey,
 								object: lang,
 								path: [item._Attribs.name],

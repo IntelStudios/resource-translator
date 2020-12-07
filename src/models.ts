@@ -1,6 +1,7 @@
 import { setObjValue } from './json-util';
 
 export interface ITranslateRequest {
+	srcLang: string;
 	lang: string;
 	object: any;
 	path: string[];

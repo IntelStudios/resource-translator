@@ -9,7 +9,7 @@ if (!argv.workDir) {
   process.exit(1);
 }
 
-const ngx: Ngx = new Ngx(argv.workDir);
+const ngx: Ngx = new Ngx(argv.workDir, argv.srcLang || 'en');
 
 ngx.readData()
 	.then((data: TranslateData) => {

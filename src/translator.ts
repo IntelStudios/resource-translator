@@ -11,8 +11,13 @@ export function translate(data: TranslateData): Promise<any> {
 		sequence = sequence.then(() => {
 			return new Promise((resolve) => {
 				console.log(`TRANS: ${r.lang}: ${r.original}`)
-				googleTranslate(r.original, { from: 'en', to: r.lang })
+				googleTranslate(r.original, { from: r.srcLang, to: r.lang })
+					.catch((e) => {
+						console.error(e);
+						resolve();
+					})
 					.then((res: any) => {
+						console.log(`=> ${res.text}`);
 						data.setTranslation(r, res.text);
 						setTimeout(() => {
 							resolve();

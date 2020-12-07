@@ -5,33 +5,35 @@ import { clone, eachObj, objValue, setObjValue } from './json-util';
 
 export class Ngx {
 
-	constructor(public workDir: string) {
+	constructor(public workDir: string, private srcLang = 'en') {
 
 	}
 
 	readData(): Promise<TranslateData> {
+		const srcFile = `${this.srcLang}.json`;
 		return new Promise((resolve) => {
 			const files = fs.readdirSync(this.workDir);
-			if (files.indexOf('en.json') < 0) {
+			if (files.indexOf(srcFile) < 0) {
 				// not an ngx-translate i18n dir
 				return resolve(null);
 			}
 			const result: TranslateData = new NgxTranslateData();
 
-			const english = JSON.parse(fs.readFileSync(`${this.workDir}/en.json`).toString());
+			const srcLang = JSON.parse(fs.readFileSync(`${this.workDir}/${srcFile}`).toString());
 			files.forEach((file: string) => {
-				if (file !== 'en.json') {
+				if (file !== srcFile) {
 					const lang = JSON.parse(fs.readFileSync(`${this.workDir}/${file}`).toString());
 					const object: ITranslationObject = { object: lang, file: file, isChange: false };
 					result.objects.push(object);
 					const langKey = file.replace('.json', '');
-					eachObj(english, [], (path, key, value) => {
+					eachObj(srcLang, [], (path, key, value) => {
 						const original = value;
 						const translation = objValue(lang, [...path, key]);
 						// console.log(path, key, original, translation);
 						if (!translation) {
 							object.isChange = true;
 							result.requests.push({
+								srcLang: this.srcLang,
 								lang: langKey,
 								object: lang,
 								path: [...path, key],
