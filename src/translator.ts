@@ -17,6 +17,10 @@ export function translate(data: TranslateData): Promise<any> {
 					resolve();
 					return;
 				}
+				if (!r.original) {
+					data.setTranslation(r, '');
+					return resolve();
+				}
 				console.log(`TRANS: ${r.lang}: ${r.original}`)
 				googleTranslate(r.original, { from: r.srcLang, to: r.lang })
 					.catch((e) => {
