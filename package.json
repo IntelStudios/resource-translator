@@ -10,7 +10,7 @@
   "author": "Libor Zoubek",
   "license": "MIT",
   "dependencies": {
-    "google-translate-api": "^2.3.0",
+    "@google-cloud/translate": "^6.1.0",
     "pixl-xml": "^1.0.13",
     "yargs": "^11.0.0"
   },

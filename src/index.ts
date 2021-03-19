@@ -9,12 +9,19 @@ if (!argv.workDir) {
   process.exit(1);
 }
 
+if (!argv.key) {
+	console.error(`--key option must be specified (Goolge Translate API Key)`)
+	process.exit(1);
+}
+
+const key = argv.key;
+
 const ngx: Ngx = new Ngx(argv.workDir, argv.srcLang || 'en');
 
 ngx.readData()
 	.then((data: TranslateData) => {
 		if (data) {
-			translate(data).then(() => {
+			translate(key, data).then(() => {
 				ngx.writeData(data);
 				console.log('NGX Finished')
 			});
@@ -26,7 +33,7 @@ const resx: Resx = new Resx(argv.workDir);
 resx.readData()
 	.then((data: TranslateData) => {
 		if (data) {
-			translate(data).then(() => {
+			translate(key, data).then(() => {
 				resx.writeData(data);
 				console.log('RESX Finished')
 			});

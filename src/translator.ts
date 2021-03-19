@@ -1,8 +1,10 @@
-import { resolve } from 'url';
 import { ITranslateRequest, TranslateData } from './models';
-const googleTranslate = require('google-translate-api');
 
-export function translate(data: TranslateData): Promise<any> {
+const { Translate } = require('@google-cloud/translate').v2;
+
+export function translate(key: string, data: TranslateData): Promise<any> {
+
+	const gTrans = new Translate({ key });
 
 	let sequence: Promise<any> = new Promise<any>((resolve) => {
 		return resolve(true);
@@ -22,18 +24,19 @@ export function translate(data: TranslateData): Promise<any> {
 					return resolve();
 				}
 				console.log(`TRANS: ${r.lang}: ${r.original}`)
-				googleTranslate(r.original, { from: r.srcLang, to: r.lang })
+				gTrans.translate(r.original, { from: r.srcLang, to: r.lang })
 					.catch((e) => {
 						console.error(e);
 						failed = true;
 						resolve();
 					})
 					.then((res: any) => {
-						console.log(`=> ${res.text}`);
-						data.setTranslation(r, res.text);
+						const trans = res[0];
+						console.log(`=> ${trans}`);
+						data.setTranslation(r, trans);
 						setTimeout(() => {
 							resolve();
-						}, (1 + Math.random()) * 200)
+						}, (1 + Math.random()) * 10)
 					});
 			});
 		});
