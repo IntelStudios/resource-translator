@@ -13,6 +13,8 @@ from pathlib import Path
 from typing import Set, Tuple, Iterator, Any, Iterable, Match
 import xml.etree.ElementTree as ElementTree
 
+ONLY_CAPITALIZE = True  # set to false to allow also converting for lowercase (beware German language)
+
 ANYTHING = r"(?:.|\n)*?"
 WHITESPACE = r"(?:\s|\n)*?"
 
@@ -91,8 +93,11 @@ def test_correctness(file_template: Path, file_derived: Path) -> bool:
         if ch_derived and ch_derived.isalpha():
             val_derived_uppercased = ch_derived.isupper()
 
-        if None not in (val_derived_uppercased, val_template_uppercased) and \
-                val_template_uppercased != val_derived_uppercased:
+        case_matches = val_template_uppercased == val_derived_uppercased
+        if not case_matches and ONLY_CAPITALIZE and val_derived_uppercased:
+            case_matches = True
+
+        if not case_matches:
             print('ERR:', data_name, '-', val_template, 'vs', val_derived, ';',
                   val_template_uppercased, 'vs', val_derived_uppercased)
             return False
@@ -122,7 +127,7 @@ def main() -> None:
 
         for data_name in merge(capitalized_data_names, lowercased_data_names):
             to_upper = data_name in capitalized_data_names
-            to_lower = data_name in lowercased_data_names
+            to_lower = not ONLY_CAPITALIZE and data_name in lowercased_data_names
             data_name = re.escape(data_name)
             value_pre = fr'<data\s+name="{data_name}"{ANYTHING}>{WHITESPACE}<value>¿?'
 
