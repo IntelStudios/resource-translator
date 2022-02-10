@@ -6,7 +6,7 @@ const XML = require('pixl-xml');
 
 export class Resx {
 
-	constructor(public workDir: string) {
+	constructor(public workDir: string, private cleanup: boolean) {
 
 	}
 
@@ -25,7 +25,8 @@ export class Resx {
 			}
 			const result: TranslateData = new ResxTranslateData();
 			origFiles.forEach((file: string) => {
-				const orig = XML.parse(fs.readFileSync(`${this.workDir}/${file}`), { preserveDocumentNode: true, preserveAttributes: true });
+				const origFile = `${this.workDir}/${file}`;
+				const orig = XML.parse(fs.readFileSync(origFile), { preserveDocumentNode: true, preserveAttributes: true });
 				const langFiles = this.getLanguageFiles(file, files);
 
 				langFiles.forEach((langFile: string) => {
@@ -47,6 +48,21 @@ export class Resx {
 								original: original
 							});
 						}
+						if (this.cleanup && lang.root.data) {
+							// cleanup current translation if not present in original one
+							const toRemove = [];
+							lang.root.data.forEach((item) => {
+								const inOrig = orig.root.data.find((i: any) => i._Attribs.name === item._Attribs.name);
+								if (!inOrig) {
+									toRemove.push(item._Attribs.name);
+								}
+							});
+							if (toRemove.length > 0) {
+								object.isChange = true;
+								console.log(`${langFile} => Cleaning up ${toRemove.length} translations, as those are no longer present in ${file}`)
+								lang.root.data = lang.root.data.filter((i) => toRemove.indexOf(i._Attribs.name) < 0);
+							}
+						}
 					});
 				});
 			});
@@ -62,7 +78,7 @@ export class Resx {
 					fs.writeFileSync(`${this.workDir}/${t.file}`, XML.stringify(t.object));
 				}
 			});
-			resolve();
+			resolve(null);
 		});
 	}
 

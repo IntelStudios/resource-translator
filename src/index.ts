@@ -15,8 +15,8 @@ if (!argv.key) {
 }
 
 const key = argv.key;
-
-const ngx: Ngx = new Ngx(argv.workDir, argv.srcLang || 'en');
+const cleanup = argv.cleanup !== 'false';
+const ngx: Ngx = new Ngx(argv.workDir, argv.srcLang || 'en', cleanup);
 
 ngx.readData()
 	.then((data: TranslateData) => {
@@ -28,7 +28,7 @@ ngx.readData()
 		}
 	});
 
-const resx: Resx = new Resx(argv.workDir);
+const resx: Resx = new Resx(argv.workDir, cleanup);
 
 resx.readData()
 	.then((data: TranslateData) => {

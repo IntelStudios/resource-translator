@@ -5,8 +5,10 @@ import { clone, eachObj, objValue, setObjValue } from './json-util';
 
 export class Ngx {
 
-	constructor(public workDir: string, private srcLang = 'en') {
-
+	constructor(public workDir: string, private srcLang = 'en', private cleanup: boolean) {
+		if (this.cleanup) {
+			console.warn('NGX processor has not yet implemented cleanup feature');
+		}
 	}
 
 	readData(): Promise<TranslateData> {
@@ -55,7 +57,7 @@ export class Ngx {
 					fs.writeFileSync(`${this.workDir}/${t.file}`, JSON.stringify(t.object, null, 2))
 				}
 			});
-			resolve();
+			resolve(null);
 		});
 	}
 
