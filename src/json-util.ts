@@ -31,6 +31,17 @@ export function objValue(object: any, path: string[]) {
 	return val;
 }
 
+export function removePath(object: any, path: string[]) {
+	let val: any = object;
+	const prop = path[path.length -1];
+	path.slice(0, path.length - 1).forEach((key: string) => {
+		if (val) {
+			val = val[key];
+		}
+	});
+	delete val[prop];
+}
+
 export function setObjValue(object: any, path: string[], value: string) {
 	let val: any = object;
 	path.forEach((key: string, index: number) => {

@@ -1,14 +1,11 @@
 import { ITranslateRequest, TranslateData, ITranslationObject, NgxTranslateData } from './models';
 import * as fs from 'fs';
-import { clone, eachObj, objValue, setObjValue } from './json-util';
+import { clone, eachObj, objValue, removePath } from './json-util';
 
 
 export class Ngx {
 
 	constructor(public workDir: string, private srcLang = 'en', private cleanup: boolean) {
-		if (this.cleanup) {
-			console.warn('NGX processor has not yet implemented cleanup feature');
-		}
 	}
 
 	readData(): Promise<TranslateData> {
@@ -43,6 +40,23 @@ export class Ngx {
 							});
 						}
 					});
+
+					if (this.cleanup) {
+						// cleanup current translation if not present in original one
+						const toRemove = [];
+						eachObj(lang, [], (path, key, value) => {
+							const p = [...path, key];
+							const inOrig = objValue(srcLang, p);
+							if (inOrig == null || inOrig === undefined) {
+								toRemove.push(p);
+							}
+						});
+						if (toRemove.length > 0) {
+							object.isChange = true;
+							console.log(`${file} => Cleaning up ${toRemove.length} translations, as those are no longer present in ${file}`)
+							toRemove.forEach((p) => removePath(lang, p));
+						}
+					}
 				}
 			});
 			resolve(result);
