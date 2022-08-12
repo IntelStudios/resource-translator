@@ -23,6 +23,11 @@ export function translate(key: string, data: TranslateData): Promise<any> {
 					data.setTranslation(r, '');
 					return resolve();
 				}
+				if (r.ignore) {
+					data.setTranslation(r, r.original);
+					resolve();
+					return;
+				}
 				console.log(`TRANS: ${r.lang}: ${r.original}`)
 				gTrans.translate(r.original, { from: r.srcLang, to: r.lang })
 					.catch((e) => {

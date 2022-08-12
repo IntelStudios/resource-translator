@@ -6,6 +6,7 @@ export interface ITranslateRequest {
 	object: any;
 	path: string[];
 	original: string;
+	ignore?: boolean;
 }
 
 export interface ITranslationObject {
