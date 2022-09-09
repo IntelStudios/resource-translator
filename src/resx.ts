@@ -75,7 +75,7 @@ export class Resx {
 			data.objects.forEach((t: ITranslationObject) => {
 				if (t.isChange) {
 					console.log(`Writing '${this.workDir}/${t.file}' translation file`);
-					fs.writeFileSync(`${this.workDir}/${t.file}`, XML.stringify(t.object));
+					fs.writeFileSync(`${this.workDir}/${t.file}`, XML.stringify(t.object, undefined, 0, '  '));
 				}
 			});
 			resolve(null);
